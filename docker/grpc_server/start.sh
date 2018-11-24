@@ -7,5 +7,5 @@ while ! mysqladmin ping -h"$DB_HOST" --silent; do
     sleep 1
 done
 
-go install /go/src/github.com/viktorminko/task/pkg/protocol/grpc
-go run /go/src/github.com/viktorminko/task/cmd/server/main.go
+go install /go/src/github.com/viktorminko/microservice-task/pkg/protocol/grpc
+go run /go/src/github.com/viktorminko/microservice-task/cmd/server/main.go

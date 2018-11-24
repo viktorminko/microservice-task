@@ -9,7 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/viktorminko/task/pkg/api/v1"
+	"github.com/viktorminko/microservice-task/pkg/api/v1"
 )
 
 func RunServer(ctx context.Context, v1API v1.ClientServiceServer, port string) error {
@@ -18,7 +18,6 @@ func RunServer(ctx context.Context, v1API v1.ClientServiceServer, port string) e
 		return err
 	}
 
-	// register parser
 	server := grpc.NewServer()
 	v1.RegisterClientServiceServer(server, v1API)
 

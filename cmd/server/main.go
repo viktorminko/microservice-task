@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/viktorminko/task/pkg/cmd/server"
+	"github.com/viktorminko/microservice-task/pkg/cmd/server"
 )
 
 func main() {

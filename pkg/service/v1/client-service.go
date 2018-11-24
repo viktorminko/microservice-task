@@ -3,7 +3,7 @@ package v1
 import (
 	"context"
 	"database/sql"
-	"github.com/viktorminko/task/pkg/api/v1"
+	"github.com/viktorminko/microservice-task/pkg/api/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

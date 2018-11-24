@@ -11,4 +11,4 @@ while true; do
     sleep 1
 done
 
-go run /go/src/github.com/viktorminko/task/cmd/parser
+go run /go/src/github.com/viktorminko/microservice-task/cmd/parser

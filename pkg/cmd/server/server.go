@@ -9,8 +9,8 @@ import (
 	// mysql driver
 	_ "github.com/go-sql-driver/mysql"
 
-	"github.com/viktorminko/task/pkg/protocol/grpc"
-	"github.com/viktorminko/task/pkg/service/v1"
+	"github.com/viktorminko/microservice-task/pkg/protocol/grpc"
+	"github.com/viktorminko/microservice-task/pkg/service/v1"
 )
 
 type Config struct {
