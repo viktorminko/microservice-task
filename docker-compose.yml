@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+
+  grpc_server:
+    build: ./docker/grpc_server
+    env_file:
+      - ./docker/grpc_server/.env
+    depends_on:
+    - mysql
+    volumes:
+    - ./pkg:/go/src/github.com/viktorminko/task/pkg
+    - ./cmd:/go/src/github.com/viktorminko/task/cmd
+    - ./docker/grpc_server/start.sh:/start.sh
+    entrypoint: /start.sh
+
+  mysql:
+    image: mysql/mysql-server:5.7
+    expose:
+    - 3306
+    env_file:
+      - ./docker/mysql/.env
+    volumes:
+      - ./docker/mysql/entrypoint:/docker-entrypoint-initdb.d
+
+  parser:
+    build: ./docker/parser
+    env_file:
+      - ./docker/parser/.env
+    environment:
+      - DATA_FILE=/data.csv
+    depends_on:
+      - grpc_server
+    volumes:
+    - ./cmd:/go/src/github.com/viktorminko/task/cmd
+    - ./pkg/api:/go/src/github.com/viktorminko/task/pkg/api
+    - ./data.csv:/data.csv
+    - ./docker/parser/start.sh:/start.sh
+    entrypoint: /start.sh

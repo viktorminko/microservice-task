@@ -1,0 +1,5 @@
+.env files should not be in git, but I leave them here for fast set up
+#.env
+data.csv
+third_party/
+.idea
