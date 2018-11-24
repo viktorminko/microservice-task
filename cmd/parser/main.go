@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -57,6 +58,8 @@ func main() {
 		log.Fatal("invalid first line", err)
 	}
 
+	var wg sync.WaitGroup
+
 	for {
 		line, err := reader.Read()
 		if err == io.EOF {
@@ -78,7 +81,9 @@ func main() {
 			"",
 		)
 
+		wg.Add(1)
 		go func() {
+			defer wg.Done()
 			req := v1.CreateRequest{
 				Api: apiVersion,
 				Client: &v1.Client{
@@ -96,6 +101,8 @@ func main() {
 			}
 			log.Printf("create result: <%+v>\n\n", res1)
 		}()
+
+		wg.Wait()
 	}
 
 }
