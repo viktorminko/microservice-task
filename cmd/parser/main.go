@@ -60,7 +60,7 @@ func ParseClient(reader csv.Reader) (*v1.Client, error) {
 		"",
 	)
 
-	return &v1.Client{Name: strings.TrimSpace(line[1]), Email: line[2], Mobile: mobile}, nil
+	return &v1.Client{Id: line[0], Name: line[1], Email: line[2], Mobile: mobile}, nil
 }
 
 func runRequest(client *v1.Client, c v1.ClientServiceClient, ctx context.Context) (*v1.CreateResponse, error) {

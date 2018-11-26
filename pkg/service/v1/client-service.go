@@ -53,9 +53,15 @@ func (s *ClientServiceServer) Create(ctx context.Context, req *v1.CreateRequest)
 	defer c.Close()
 
 	res, err := c.ExecContext(ctx,
-		"INSERT INTO Client(`Name`, `Email`, `Mobile`) VALUES(?, ?, ?) "+
-			"ON DUPLICATE KEY UPDATE `Name`=?, `Mobile`=?",
-		req.Client.Name, req.Client.Email, req.Client.Mobile, req.Client.Name, req.Client.Mobile)
+		"INSERT INTO Client(`id`, `Name`, `Email`, `Mobile`) VALUES(?, ?, ?, ?) "+
+			"ON DUPLICATE KEY UPDATE `Name`=?, `Email`=?, `Mobile`=?",
+		req.Client.Id,
+		req.Client.Name,
+		req.Client.Email,
+		req.Client.Mobile,
+		req.Client.Name,
+		req.Client.Email,
+		req.Client.Mobile)
 	if err != nil {
 		return nil, status.Error(codes.Unknown, "failed to insert into Client-> "+err.Error())
 	}
