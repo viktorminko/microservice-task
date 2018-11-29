@@ -110,7 +110,6 @@ func main() {
 	var wg sync.WaitGroup
 
 	for {
-
 		client, err := ParseClient(*reader)
 		if err == io.EOF {
 			break
@@ -136,8 +135,8 @@ func main() {
 			log.Println("record was updated")
 
 		}()
-
-		wg.Wait()
 	}
+
+	wg.Wait()
 
 }
