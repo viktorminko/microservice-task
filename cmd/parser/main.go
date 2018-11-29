@@ -1,15 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"context"
-	"encoding/csv"
-	"fmt"
+	"github.com/viktorminko/microservice-task/pkg/parser"
 	"io"
 	"log"
 	"os"
-	"regexp"
-	"strconv"
-	"strings"
 	"sync"
 	"time"
 
@@ -27,40 +24,6 @@ type Client struct {
 	Name         string
 	Email        string
 	MobileNumber string
-}
-
-func ParseClient(reader csv.Reader) (*v1.Client, error) {
-	line, err := reader.Read()
-
-	if err != nil {
-		return nil, err
-	}
-
-	if len(line) != 4 {
-		return nil, fmt.Errorf(
-			"unexpected number of properties in client line: expected %v, got %v",
-			4, len(line),
-		)
-	}
-
-	//First field should be an integer
-	_, err = strconv.Atoi(line[0])
-	if err != nil {
-		return nil, err
-	}
-
-	//Leave only numbers in the phone
-	reg, err := regexp.Compile("[^0-9]+")
-	if err != nil {
-		return nil, err
-	}
-
-	mobile := "+44" + reg.ReplaceAllString(
-		strings.Replace(line[3], " ", "", -1),
-		"",
-	)
-
-	return &v1.Client{Id: line[0], Name: line[1], Email: line[2], Mobile: mobile}, nil
 }
 
 func runRequest(client *v1.Client, c v1.ClientServiceClient, ctx context.Context) (*v1.CreateResponse, error) {
@@ -86,6 +49,30 @@ func initClientService(host string, port string) (v1.ClientServiceClient, *grpc.
 	return v1.NewClientServiceClient(conn), conn, nil
 }
 
+//init reader for data source
+//can be changed if we need to reed from something else then a file
+func initSource() (io.Reader, error) {
+	f, err := os.Open(os.Getenv("DATA_FILE"))
+
+	if err != nil {
+		return nil, err
+	}
+
+	return bufio.NewReader(f), nil
+}
+
+//init
+func initParser() parser.Parser {
+	switch os.Getenv("DATA_TYPE") {
+	case "csv":
+		return &parser.CSV{}
+	case "json":
+		return &parser.JSON{}
+	}
+
+	return &parser.CSV{}
+}
+
 func main() {
 
 	c, conn, err := initClientService(os.Getenv("GRPC_HOST"), os.Getenv("GRPC_PORT"))
@@ -98,19 +85,20 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), executionTimeout)
 	defer cancel()
 
-	csvFile, err := os.Open(os.Getenv("DATA_FILE"))
-
+	src, err := initSource()
 	if err != nil {
-		log.Fatalf("unable to open CSV file: %v", err)
+		log.Fatalf("unable to init data source: %v", err)
 	}
 
-	reader := csv.NewReader(csvFile)
-	reader.TrimLeadingSpace = true
+	if err != nil {
+		log.Fatalf("unable to init reader: %v", err)
+	}
+
+	parser := initParser()
 
 	var wg sync.WaitGroup
-
 	for {
-		client, err := ParseClient(*reader)
+		client, err := parser.Parse(src)
 		if err == io.EOF {
 			break
 		}

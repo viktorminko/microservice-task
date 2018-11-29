@@ -1,14 +1,14 @@
-package main
+package parser
 
 import (
-	"encoding/csv"
 	"github.com/viktorminko/microservice-task/pkg/api/v1"
+	"io"
 	"reflect"
 	"strings"
 	"testing"
 )
 
-func TestParseClient(t *testing.T) {
+func TestCSV_Parse(t *testing.T) {
 
 	type TestData struct {
 		Name            string
@@ -46,9 +46,8 @@ func TestParseClient(t *testing.T) {
 
 	for _, tcase := range tests {
 		t.Run(tcase.Name, func(t *testing.T) {
-			reader := csv.NewReader(strings.NewReader(tcase.data))
-			reader.TrimLeadingSpace = true
-			res, err := ParseClient(*reader)
+			p := CSV{}
+			res, err := p.Parse(strings.NewReader(tcase.data))
 
 			if tcase.isErrorExpected && err == nil {
 				t.Fatal("error expected, but not returned")
@@ -63,5 +62,49 @@ func TestParseClient(t *testing.T) {
 			}
 		})
 
+	}
+}
+
+func TestCSV_ParseMultipleLines(t *testing.T) {
+
+	r := strings.NewReader(`
+		39,Kieran,Cras@magna.ca,(01285) 68417
+    	2,John,johndoe@gmail.com,123456`)
+
+	exp := []*v1.Client{
+		{Id: "39", Name: "Kieran", Email: "Cras@magna.ca", Mobile: "+440128568417"},
+		{Id: "2", Name: "John", Email: "johndoe@gmail.com", Mobile: "+44123456"},
+	}
+
+	p := CSV{}
+
+	res, err := p.Parse(r)
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !reflect.DeepEqual(res, exp[0]) {
+		t.Fatalf("unexpected result: expected %v, got %v", exp[0], res)
+	}
+
+	res, err = p.Parse(r)
+
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	if !reflect.DeepEqual(res, exp[1]) {
+		t.Fatalf("unexpected result: expected %v, got %v", exp[1], res)
+	}
+
+	res, err = p.Parse(r)
+
+	if err == nil {
+		t.Fatal("error expected, but not returned")
+	}
+
+	if err != io.EOF {
+		t.Fatalf("EOF error expected, but got: %v", err)
 	}
 }
