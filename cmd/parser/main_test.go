@@ -21,7 +21,7 @@ func TestParseClient(t *testing.T) {
 		{
 			"valid client",
 			`39,Kieran,Cras@magna.ca,(01285) 68417`,
-			&v1.Client{Name: "Kieran", Email: "Cras@magna.ca", Mobile: "+440128568417"},
+			&v1.Client{Id: "39", Name: "Kieran", Email: "Cras@magna.ca", Mobile: "+440128568417"},
 			false,
 		},
 		{
@@ -33,7 +33,7 @@ func TestParseClient(t *testing.T) {
 		{
 			"phone number formatted correctly",
 			`39,Kieran, Cras@magna.ca,+s(01285) 68417ml`,
-			&v1.Client{Name: "Kieran", Email: "Cras@magna.ca", Mobile: "+440128568417"},
+			&v1.Client{Id: "39", Name: "Kieran", Email: "Cras@magna.ca", Mobile: "+440128568417"},
 			false,
 		},
 		{
