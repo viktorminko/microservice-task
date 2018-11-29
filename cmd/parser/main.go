@@ -127,17 +127,13 @@ func main() {
 
 			log.Printf("sending request to client service, record: %v", client)
 
-			res, err := runRequest(client, c, ctx)
+			_, err := runRequest(client, c, ctx)
 			if err != nil {
 				log.Printf("error while sending request to client service: %v", err)
 				return
 			}
 
-			if 0 == res.Id {
-				log.Println("record updated\n")
-			} else {
-				log.Printf("new record added with id: %v \n\n", res.Id)
-			}
+			log.Println("record was updated")
 
 		}()
 

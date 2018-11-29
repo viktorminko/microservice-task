@@ -17,8 +17,6 @@ message CreateRequest{
 
 message CreateResponse{
     string api = 1;
-
-    int64 id = 2;
 }
 
 service ClientService {

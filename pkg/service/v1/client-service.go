@@ -52,7 +52,7 @@ func (s *ClientServiceServer) Create(ctx context.Context, req *v1.CreateRequest)
 	}
 	defer c.Close()
 
-	res, err := c.ExecContext(ctx,
+	_, err = c.ExecContext(ctx,
 		"INSERT INTO Client(`id`, `Name`, `Email`, `Mobile`) VALUES(?, ?, ?, ?) "+
 			"ON DUPLICATE KEY UPDATE `Name`=?, `Email`=?, `Mobile`=?",
 		req.Client.Id,
@@ -66,14 +66,7 @@ func (s *ClientServiceServer) Create(ctx context.Context, req *v1.CreateRequest)
 		return nil, status.Error(codes.Unknown, "failed to insert into Client-> "+err.Error())
 	}
 
-	// get ID of creates Client
-	id, err := res.LastInsertId()
-	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to retrieve id for created Client-> "+err.Error())
-	}
-
 	return &v1.CreateResponse{
 		Api: apiVersion,
-		Id:  id,
 	}, nil
 }
