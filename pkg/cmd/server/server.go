@@ -13,6 +13,7 @@ import (
 	"github.com/viktorminko/microservice-task/pkg/service/v1"
 )
 
+//Config handles server configuration
 type Config struct {
 	Port string
 
@@ -22,6 +23,9 @@ type Config struct {
 	DBDatabase string
 }
 
+const dbMaxOpenConnections = 100
+
+//RunServer runs grpc server
 func RunServer() error {
 	ctx := context.Background()
 
@@ -48,6 +52,8 @@ func RunServer() error {
 		return fmt.Errorf("failed to open database: %v", err)
 	}
 	defer db.Close()
+
+	db.SetMaxOpenConns(dbMaxOpenConnections)
 
 	v1API := v1.NewClientServiceServer(db)
 
