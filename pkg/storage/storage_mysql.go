@@ -65,6 +65,19 @@ func (s *SQL) connect(ctx context.Context) (*sql.Conn, error) {
 	return c, nil
 }
 
+func closeConnection(ctx context.Context, c *sql.Conn) {
+	err := c.PingContext(ctx)
+	if err != nil {
+		return
+	}
+
+	if err := c.Close(); err != nil {
+		log.Printf("error while closing mysql connection: %v", err)
+	}
+
+	return
+}
+
 //Create creates record in MySQL DB
 func (s *SQL) Create(ctx context.Context, req *v1.CreateRequest) error {
 	// get SQL connection from pool
@@ -72,11 +85,8 @@ func (s *SQL) Create(ctx context.Context, req *v1.CreateRequest) error {
 	if err != nil {
 		return err
 	}
-	defer func() {
-		if err := c.Close(); err != nil {
-			log.Printf("error while closing mysql connection: %v", err)
-		}
-	}()
+
+	defer closeConnection(ctx, c)
 
 	_, err = c.ExecContext(ctx,
 		"INSERT INTO Client(`id`, `Name`, `Email`, `Mobile`) VALUES(?, ?, ?, ?) "+
