@@ -1,4 +1,4 @@
-###### Run with docker
+### Run with docker
 
 I left .env files in git to simplify set up process, normally only .env samples should be in repository
 
@@ -11,7 +11,7 @@ run
 docker-compose up -d
 `
 
-###### Run compiled binaries
+### Run compiled binaries
 
 Run server with your DB credentials
 
@@ -25,7 +25,7 @@ then run parser
  GRPC_HOST=0.0.0.0 GRPC_PORT=5000 DATA_FILE=./data.csv  go run cmd/parser/main.go
 `
 
-###### Run with Makefile
+### Run with Makefile
 
 Test, lint and build
 
@@ -39,7 +39,7 @@ Run server and parser
  make run_all
 `
 
-###### Directory structure
+### Directory structure
 
 * /api/proto - proto file for specific api version (current v1)
 * /cmd/server/ - server entrypoint (main.go)
