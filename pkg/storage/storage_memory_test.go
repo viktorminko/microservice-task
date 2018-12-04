@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"context"
 	"github.com/viktorminko/microservice-task/pkg/api/v1"
 	"reflect"
 	"testing"
@@ -25,7 +26,7 @@ func TestMemory_Create(t *testing.T) {
 
 	c := v1.Client{Id: "1", Name: "John Doe", Email: "john@email.com", Mobile: "123456"}
 
-	err := s.Create(nil, &v1.CreateRequest{Client: &c})
+	err := s.Create(context.TODO(), &v1.CreateRequest{Client: &c})
 	if err != nil {
 		t.Fatalf("unexpected error while creating record: %v", err)
 	}
@@ -41,7 +42,7 @@ func TestMemory_Close(t *testing.T) {
 		t.Fatalf("unexpected error while inititlizing map: %v", err)
 	}
 
-	if err := s.Create(nil, &v1.CreateRequest{Client: &v1.Client{Id: "1", Name: "John Doe", Email: "john@email.com", Mobile: "123456"}}); err != nil {
+	if err := s.Create(context.TODO(), &v1.CreateRequest{Client: &v1.Client{Id: "1", Name: "John Doe", Email: "john@email.com", Mobile: "123456"}}); err != nil {
 		t.Fatalf("unexpected error while creating record: %v", err)
 	}
 
@@ -61,11 +62,11 @@ func TestMemory_MemoryLimit(t *testing.T) {
 		t.Fatalf("unexpected error while inititlizing map: %v", err)
 	}
 
-	if err := s.Create(nil, &v1.CreateRequest{Client: &v1.Client{Id: "1", Name: "John Doe", Email: "john@email.com", Mobile: "123456"}}); err != nil {
+	if err := s.Create(context.TODO(), &v1.CreateRequest{Client: &v1.Client{Id: "1", Name: "John Doe", Email: "john@email.com", Mobile: "123456"}}); err != nil {
 		t.Fatalf("unexpected error while creating record: %v", err)
 	}
 
-	if err := s.Create(nil, &v1.CreateRequest{Client: &v1.Client{Id: "2", Name: "Jane Doe", Email: "jane@email.com", Mobile: "123456"}}); err == nil {
+	if err := s.Create(context.TODO(), &v1.CreateRequest{Client: &v1.Client{Id: "2", Name: "Jane Doe", Email: "jane@email.com", Mobile: "123456"}}); err == nil {
 		t.Fatalf("memory limit error expected, but not returned, memory limit: %v", limit)
 	}
 
