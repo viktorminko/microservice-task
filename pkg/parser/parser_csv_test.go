@@ -98,7 +98,7 @@ func TestCSV_ParseMultipleLines(t *testing.T) {
 		t.Fatalf("unexpected result: expected %v, got %v", exp[1], res)
 	}
 
-	res, err = p.Parse(r)
+	_, err = p.Parse(r)
 
 	if err == nil {
 		t.Fatal("error expected, but not returned")

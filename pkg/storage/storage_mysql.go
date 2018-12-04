@@ -72,7 +72,11 @@ func (s *SQL) Create(ctx context.Context, req *v1.CreateRequest) error {
 	if err != nil {
 		return err
 	}
-	defer c.Close()
+	defer func() {
+		if err := c.Close(); err != nil {
+			log.Printf("error while closing mysql connection: %v", err)
+		}
+	}()
 
 	_, err = c.ExecContext(ctx,
 		"INSERT INTO Client(`id`, `Name`, `Email`, `Mobile`) VALUES(?, ?, ?, ?) "+

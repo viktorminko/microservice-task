@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"os"
 
 	"github.com/viktorminko/microservice-task/pkg/cmd/server"
@@ -9,7 +9,7 @@ import (
 
 func main() {
 	if err := cmd.RunServer(); err != nil {
-		fmt.Fprintf(os.Stderr, "%v\n", err)
+		log.Printf("Error while running server: %v", err)
 		os.Exit(1)
 	}
 }

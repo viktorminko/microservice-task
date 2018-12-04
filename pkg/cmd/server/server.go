@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"log"
 	"os"
 
 	// mysql driver
@@ -28,11 +29,17 @@ func InitStorage() storage.Storager {
 func RunServer() error {
 
 	s := InitStorage()
+
 	err := s.Start()
 	if err != nil {
 		return err
 	}
-	defer s.Close()
+
+	defer func() {
+		if err := s.Close(); err != nil {
+			log.Printf("error while closing storage backend: %v", err)
+		}
+	}()
 
 	ctx := context.Background()
 

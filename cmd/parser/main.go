@@ -20,13 +20,6 @@ const (
 	executionTimeout = 100 * time.Second
 )
 
-//Client represents client data structure
-type Client struct {
-	Name         string
-	Email        string
-	MobileNumber string
-}
-
 func runRequest(ctx context.Context, client *v1.Client, c v1.ClientServiceClient) (*v1.CreateResponse, error) {
 	req := v1.CreateRequest{
 		Api:    apiVersion,
@@ -77,7 +70,11 @@ func initParser() parser.Parser {
 func main() {
 
 	c, conn, err := initClientService(os.Getenv("GRPC_HOST"), os.Getenv("GRPC_PORT"))
-	defer conn.Close()
+	defer func() {
+		if err := conn.Close(); err != nil {
+			log.Printf("error while closing client service connection: %v", err)
+		}
+	}()
 
 	if err != nil {
 		log.Fatalf("unable to init client service: %v", err)
@@ -91,11 +88,11 @@ func main() {
 		log.Fatalf("unable to init data source: %v", err)
 	}
 
-	parser := initParser()
+	p := initParser()
 
 	var wg sync.WaitGroup
 	for {
-		client, err := parser.Parse(src)
+		client, err := p.Parse(src)
 		if err == io.EOF {
 			break
 		}
