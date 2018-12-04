@@ -33,7 +33,7 @@ services:
     - grpc_server
     volumes:
     - ./cmd:/go/src/github.com/viktorminko/microservice-task/cmd
-    - ./pkg/api:/go/src/github.com/viktorminko/microservice-task/pkg/api
+    - ./pkg:/go/src/github.com/viktorminko/microservice-task/pkg
     - ./data.csv:/data.csv
     - ./docker/parser/start.sh:/start.sh
     entrypoint: /start.sh
