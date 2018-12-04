@@ -4,10 +4,9 @@ import (
 	"encoding/csv"
 	"fmt"
 	"github.com/viktorminko/microservice-task/pkg/api/v1"
+	"github.com/viktorminko/microservice-task/pkg/client"
 	"io"
-	"regexp"
 	"strconv"
-	"strings"
 )
 
 //CSV parses csv data from Reader line by line
@@ -22,7 +21,7 @@ func NewCSV(r io.Reader) *CSV {
 	return &CSV{cr}
 }
 
-//Parse executes paring of one client
+//Parse executes parsing of one client
 func (p *CSV) Parse() (*v1.Client, error) {
 	res, err := p.Reader.Read()
 	if err != nil {
@@ -42,16 +41,10 @@ func (p *CSV) Parse() (*v1.Client, error) {
 		return nil, err
 	}
 
-	//Leave only numbers in the phone
-	reg, err := regexp.Compile("[^0-9]+")
+	mobile, err := client.NewMobile(res[3]).GetFormattedNumber()
 	if err != nil {
 		return nil, err
 	}
-
-	mobile := "+44" + reg.ReplaceAllString(
-		strings.Replace(res[3], " ", "", -1),
-		"",
-	)
 
 	return &v1.Client{Id: res[0], Name: res[1], Email: res[2], Mobile: mobile}, nil
 }
