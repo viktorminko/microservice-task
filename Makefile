@@ -11,7 +11,7 @@ build: build_server build_parser
 
 run: run_server run_parser
 
-all: test build
+all: test lint build
 
 run_all: run_server run_parser
 
@@ -35,3 +35,6 @@ run_parser:
 clean:
 		$(GOCLEAN)
 		rm -f $(BINARY_NAME)
+
+lint:
+		golint ./...
