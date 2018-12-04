@@ -12,6 +12,7 @@ import (
 	"github.com/viktorminko/microservice-task/pkg/api/v1"
 )
 
+//RunServer runs grpc server
 func RunServer(ctx context.Context, v1API v1.ClientServiceServer, port string) error {
 	listen, err := net.Listen("tcp", ":"+port)
 	if err != nil {

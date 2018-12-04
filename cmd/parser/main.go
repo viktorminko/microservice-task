@@ -20,13 +20,14 @@ const (
 	executionTimeout = 100 * time.Second
 )
 
+//Client represents client data structure
 type Client struct {
 	Name         string
 	Email        string
 	MobileNumber string
 }
 
-func runRequest(client *v1.Client, c v1.ClientServiceClient, ctx context.Context) (*v1.CreateResponse, error) {
+func runRequest(ctx context.Context, client *v1.Client, c v1.ClientServiceClient) (*v1.CreateResponse, error) {
 	req := v1.CreateRequest{
 		Api:    apiVersion,
 		Client: client,
@@ -90,10 +91,6 @@ func main() {
 		log.Fatalf("unable to init data source: %v", err)
 	}
 
-	if err != nil {
-		log.Fatalf("unable to init reader: %v", err)
-	}
-
 	parser := initParser()
 
 	var wg sync.WaitGroup
@@ -114,7 +111,7 @@ func main() {
 
 			log.Printf("sending request to client service, record: %v", client)
 
-			_, err := runRequest(client, c, ctx)
+			_, err := runRequest(ctx, client, c)
 			if err != nil {
 				log.Printf("error while sending request to client service: %v", err)
 				return

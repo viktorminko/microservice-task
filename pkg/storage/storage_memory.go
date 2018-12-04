@@ -7,17 +7,20 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+//Memory stores data in map
 type Memory struct {
 	Map     map[string]v1.Client
 	MaxSize int
 }
 
+//Start initializes map
 func (m *Memory) Start() error {
 	m.Map = make(map[string]v1.Client)
 
 	return nil
 }
 
+//Create creates creates record in DB
 func (m *Memory) Create(ctx context.Context, req *v1.CreateRequest) error {
 
 	if m.Map == nil {
@@ -35,6 +38,7 @@ func (m *Memory) Create(ctx context.Context, req *v1.CreateRequest) error {
 	return nil
 }
 
+//Close clears the map
 func (m *Memory) Close() error {
 	m.Map = make(map[string]v1.Client)
 	return nil

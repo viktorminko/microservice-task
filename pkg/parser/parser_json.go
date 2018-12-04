@@ -7,12 +7,13 @@ import (
 	"io"
 )
 
-//parses json strings from reader line by line
+//JSON parses json strings from reader line by line
 //each line should be a valid json string
 type JSON struct {
 	Scanner *bufio.Scanner
 }
 
+//Parse parses single json entry representing one client
 func (p *JSON) Parse(r io.Reader) (*v1.Client, error) {
 	if p.Scanner == nil {
 		p.Scanner = bufio.NewScanner(r)

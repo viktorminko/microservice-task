@@ -11,6 +11,7 @@ import (
 	"os"
 )
 
+//SQL implements MySQL storage
 type SQL struct {
 	Db *sql.DB
 }
@@ -27,6 +28,7 @@ type config struct {
 
 const dbMaxOpenConnections = 100
 
+//Start opens DB connection
 func (s *SQL) Start() error {
 	// get configuration
 	var cfg config
@@ -63,6 +65,7 @@ func (s *SQL) connect(ctx context.Context) (*sql.Conn, error) {
 	return c, nil
 }
 
+//Create creates record in MySQL DB
 func (s *SQL) Create(ctx context.Context, req *v1.CreateRequest) error {
 	// get SQL connection from pool
 	c, err := s.connect(ctx)
@@ -88,6 +91,7 @@ func (s *SQL) Create(ctx context.Context, req *v1.CreateRequest) error {
 	return nil
 }
 
+//Close closes MySQL DB
 func (s *SQL) Close() error {
 	log.Printf("Closing db")
 	return s.Db.Close()

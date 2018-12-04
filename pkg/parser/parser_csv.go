@@ -10,11 +10,12 @@ import (
 	"strings"
 )
 
-//parses csv data from Reader line by line
+//CSV parses csv data from Reader line by line
 type CSV struct {
 	Reader *csv.Reader
 }
 
+//Parse executes paring of one client
 func (p *CSV) Parse(r io.Reader) (*v1.Client, error) {
 	if p.Reader == nil {
 		p.Reader = csv.NewReader(r)

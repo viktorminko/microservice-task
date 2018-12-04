@@ -5,7 +5,7 @@ import (
 	"io"
 )
 
-//to add new parser create struct which implements this interface
+//Parser interface for parsers
 type Parser interface {
 	Parse(r io.Reader) (*v1.Client, error)
 }

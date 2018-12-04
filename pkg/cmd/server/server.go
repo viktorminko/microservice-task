@@ -14,6 +14,7 @@ import (
 
 const maxMapSize = 10
 
+//InitStorage initializes storage backend
 func InitStorage() storage.Storager {
 	switch os.Getenv("STORE_TYPE") {
 	case "memory":
