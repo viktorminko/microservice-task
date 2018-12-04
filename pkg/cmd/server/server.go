@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"context"
-	"database/sql"
-	"fmt"
 	"os"
 
 	// mysql driver
@@ -11,51 +9,34 @@ import (
 
 	"github.com/viktorminko/microservice-task/pkg/protocol/grpc"
 	"github.com/viktorminko/microservice-task/pkg/service/v1"
+	"github.com/viktorminko/microservice-task/pkg/storage"
 )
 
-//Config handles server configuration
-type Config struct {
-	Port string
+const maxMapSize = 10
 
-	DBHost     string
-	DBUser     string
-	DBPassword string
-	DBDatabase string
+func InitStorage() storage.Storager {
+	switch os.Getenv("STORE_TYPE") {
+	case "memory":
+		return &storage.Memory{MaxSize: maxMapSize}
+	}
+
+	return &storage.SQL{}
 }
-
-const dbMaxOpenConnections = 100
 
 //RunServer runs grpc server
 func RunServer() error {
+
+	s := InitStorage()
+	err := s.Start()
+	if err != nil {
+		return err
+	}
+	defer s.Close()
+
 	ctx := context.Background()
 
-	// get configuration
-	var cfg Config
-	cfg.Port = os.Getenv("PORT")
-	cfg.DBHost = os.Getenv("DB_HOST")
-	cfg.DBUser = os.Getenv("DB_USER")
-	cfg.DBPassword = os.Getenv("DB_PASSWORD")
-	cfg.DBDatabase = os.Getenv("DB_SCHEMA")
+	v1API := v1.NewClientServiceServer(s)
 
-	if len(cfg.Port) == 0 {
-		return fmt.Errorf("invalid TCP port for gRPC server: '%s'", cfg.Port)
-	}
-
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?%s",
-		cfg.DBUser,
-		cfg.DBPassword,
-		cfg.DBHost,
-		cfg.DBDatabase,
-	)
-	db, err := sql.Open("mysql", dsn)
-	if err != nil {
-		return fmt.Errorf("failed to open database: %v", err)
-	}
-	defer db.Close()
-
-	db.SetMaxOpenConns(dbMaxOpenConnections)
-
-	v1API := v1.NewClientServiceServer(db)
-
-	return grpc.RunServer(ctx, v1API, cfg.Port)
+	p := os.Getenv("PORT")
+	return grpc.RunServer(ctx, v1API, p)
 }

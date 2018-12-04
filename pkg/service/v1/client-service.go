@@ -2,8 +2,8 @@ package v1
 
 import (
 	"context"
-	"database/sql"
 	"github.com/viktorminko/microservice-task/pkg/api/v1"
+	"github.com/viktorminko/microservice-task/pkg/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -13,11 +13,11 @@ const (
 )
 
 type ClientServiceServer struct {
-	db *sql.DB
+	Storage storage.Storager
 }
 
-func NewClientServiceServer(db *sql.DB) v1.ClientServiceServer {
-	return &ClientServiceServer{db: db}
+func NewClientServiceServer(s storage.Storager) v1.ClientServiceServer {
+	return &ClientServiceServer{s}
 }
 
 func (s *ClientServiceServer) checkAPI(api string) error {
@@ -31,39 +31,15 @@ func (s *ClientServiceServer) checkAPI(api string) error {
 	return nil
 }
 
-func (s *ClientServiceServer) connect(ctx context.Context) (*sql.Conn, error) {
-	c, err := s.db.Conn(ctx)
-	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to connect to database-> "+err.Error())
-	}
-	return c, nil
-}
-
 func (s *ClientServiceServer) Create(ctx context.Context, req *v1.CreateRequest) (*v1.CreateResponse, error) {
 	// check if the API version requested by client is supported by server
 	if err := s.checkAPI(req.Api); err != nil {
 		return nil, err
 	}
 
-	// get SQL connection from pool
-	c, err := s.connect(ctx)
+	err := s.Storage.Create(ctx, req)
 	if err != nil {
 		return nil, err
-	}
-	defer c.Close()
-
-	_, err = c.ExecContext(ctx,
-		"INSERT INTO Client(`id`, `Name`, `Email`, `Mobile`) VALUES(?, ?, ?, ?) "+
-			"ON DUPLICATE KEY UPDATE `Name`=?, `Email`=?, `Mobile`=?",
-		req.Client.Id,
-		req.Client.Name,
-		req.Client.Email,
-		req.Client.Mobile,
-		req.Client.Name,
-		req.Client.Email,
-		req.Client.Mobile)
-	if err != nil {
-		return nil, status.Error(codes.Unknown, "failed to insert into Client-> "+err.Error())
 	}
 
 	return &v1.CreateResponse{
