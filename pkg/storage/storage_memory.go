@@ -5,17 +5,20 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"sync"
 )
 
 //Memory stores data in map
 type Memory struct {
 	Map     map[string]v1.Client
 	MaxSize int
+	mutex   sync.Mutex
 }
 
 //Start initializes map
 func (m *Memory) Start() error {
 	m.Map = make(map[string]v1.Client)
+	m.mutex = sync.Mutex{}
 
 	return nil
 }
@@ -33,7 +36,9 @@ func (m *Memory) Create(ctx context.Context, req *v1.CreateRequest) error {
 
 	client := req.Client
 
+	m.mutex.Lock()
 	m.Map[client.Id] = *client
+	m.mutex.Unlock()
 
 	return nil
 }
