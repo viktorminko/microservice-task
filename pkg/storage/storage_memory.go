@@ -40,6 +40,6 @@ func (m *Memory) Create(ctx context.Context, req *v1.CreateRequest) error {
 
 //Close clears the map
 func (m *Memory) Close() error {
-	m.Map = make(map[string]v1.Client)
+	m.Map = nil
 	return nil
 }

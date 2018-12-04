@@ -15,13 +15,15 @@ type CSV struct {
 	Reader *csv.Reader
 }
 
-//Parse executes paring of one client
-func (p *CSV) Parse(r io.Reader) (*v1.Client, error) {
-	if p.Reader == nil {
-		p.Reader = csv.NewReader(r)
-		p.Reader.TrimLeadingSpace = true
-	}
+//NewCSV creates new CSV parser that reads from r
+func NewCSV(r io.Reader) *CSV {
+	cr := csv.NewReader(r)
+	cr.TrimLeadingSpace = true
+	return &CSV{cr}
+}
 
+//Parse executes paring of one client
+func (p *CSV) Parse() (*v1.Client, error) {
 	res, err := p.Reader.Read()
 	if err != nil {
 		return nil, err

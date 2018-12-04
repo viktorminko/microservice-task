@@ -50,7 +50,7 @@ func TestMemory_Close(t *testing.T) {
 		t.Fatalf("unexpected error while closing map: %v", err)
 	}
 
-	if !reflect.DeepEqual(s.Map, make(map[string]v1.Client)) {
+	if s.Map != nil {
 		t.Fatal("map was not closed properly")
 	}
 }
@@ -68,13 +68,5 @@ func TestMemory_MemoryLimit(t *testing.T) {
 
 	if err := s.Create(context.TODO(), &v1.CreateRequest{Client: &v1.Client{Id: "2", Name: "Jane Doe", Email: "jane@email.com", Mobile: "123456"}}); err == nil {
 		t.Fatalf("memory limit error expected, but not returned, memory limit: %v", limit)
-	}
-
-	if err := s.Close(); err != nil {
-		t.Fatalf("unexpected error while closing map: %v", err)
-	}
-
-	if !reflect.DeepEqual(s.Map, make(map[string]v1.Client)) {
-		t.Fatal("map was not closed properly")
 	}
 }

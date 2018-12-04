@@ -13,12 +13,13 @@ type JSON struct {
 	Scanner *bufio.Scanner
 }
 
-//Parse parses single json entry representing one client
-func (p *JSON) Parse(r io.Reader) (*v1.Client, error) {
-	if p.Scanner == nil {
-		p.Scanner = bufio.NewScanner(r)
-	}
+//NewJSON creates new JSON parser that reads from r
+func NewJSON(r io.Reader) *JSON {
+	return &JSON{bufio.NewScanner(r)}
+}
 
+//Parse parses single json entry representing one client
+func (p *JSON) Parse() (*v1.Client, error) {
 	if !p.Scanner.Scan() {
 		if p.Scanner.Err() != nil {
 			return nil, p.Scanner.Err()

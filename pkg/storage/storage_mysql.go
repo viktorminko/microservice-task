@@ -37,7 +37,7 @@ func (s *SQL) Start() error {
 	cfg.DBPassword = os.Getenv("DB_PASSWORD")
 	cfg.DBDatabase = os.Getenv("DB_SCHEMA")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s?%s",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s)/%s",
 		cfg.DBUser,
 		cfg.DBPassword,
 		cfg.DBHost,

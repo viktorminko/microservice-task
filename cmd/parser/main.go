@@ -56,15 +56,15 @@ func initSource() (io.Reader, error) {
 }
 
 //init
-func initParser() parser.Parser {
+func initParser(r io.Reader) parser.Parser {
 	switch os.Getenv("DATA_TYPE") {
 	case "csv":
-		return &parser.CSV{}
+		return parser.NewCSV(r)
 	case "json":
-		return &parser.JSON{}
+		return parser.NewJSON(r)
 	}
 
-	return &parser.CSV{}
+	return parser.NewCSV(r)
 }
 
 func main() {
@@ -88,11 +88,11 @@ func main() {
 		log.Fatalf("unable to init data source: %v", err)
 	}
 
-	p := initParser()
+	p := initParser(src)
 
 	var wg sync.WaitGroup
 	for {
-		client, err := p.Parse(src)
+		client, err := p.Parse()
 		if err == io.EOF {
 			break
 		}
