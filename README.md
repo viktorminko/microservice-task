@@ -25,6 +25,20 @@ then run parser
  GRPC_HOST=0.0.0.0 GRPC_PORT=5000 DATA_FILE=./data.csv  go run cmd/parser/main.go
 `
 
+###### Run with Makefile
+
+Test, lint and build
+
+`
+make all
+`
+
+Run server and parser
+
+`
+ make run_all
+`
+
 ###### Directory structure
 
 * /api/proto - proto file for specific api version (current v1)
