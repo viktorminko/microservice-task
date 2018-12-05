@@ -17,7 +17,8 @@ import (
 
 const (
 	apiVersion       = "v1"
-	executionTimeout = 100 * time.Second
+	executionTimeout = 5 * time.Minute
+	maxGoRoutines    = 100000
 )
 
 func runRequest(ctx context.Context, client *v1.Client, c v1.ClientServiceClient) (*v1.CreateResponse, error) {
@@ -90,6 +91,9 @@ func main() {
 
 	p := initParser(src)
 
+	//limit number of goroutines to avoid memory leaks
+	limit := make(chan struct{}, maxGoRoutines)
+
 	var wg sync.WaitGroup
 	for {
 		client, err := p.Parse()
@@ -102,11 +106,16 @@ func main() {
 			continue
 		}
 
+		limit <- struct{}{}
+
 		wg.Add(1)
 		go func() {
-			defer wg.Done()
+			defer func() {
+				wg.Done()
+				<-limit
+			}()
 
-			log.Printf("sending request to client service, record: %v", client)
+			//log.Printf("sending request to client service, record: %v", client)
 
 			_, err := runRequest(ctx, client, c)
 			if err != nil {
@@ -114,7 +123,7 @@ func main() {
 				return
 			}
 
-			log.Println("record was updated")
+			//log.Println("record was updated")
 
 		}()
 	}
